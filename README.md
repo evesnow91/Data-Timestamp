@@ -14,8 +14,17 @@ This service's design borrows some from the OpenTimestamps project, but due to t
 
 ### Smart Contracts
 
+(* Mutable variable storing the latest merkle root *)
+uint256 Merkle Root
+
 ### Incomplete and Complete Proof Files
 
 ### Client-side digest generation, privacy features.
 
 ## Development
+
+To learn the basics of our development approach, this [guide](https://testdriven.io/blog/fastapi-crud/) may be helpful.
+
+Once you Run ./build.sh,  go to 
+[http://localhost:8002/docs](http://localhost:8002/docs) to easily interact with the system.
+
