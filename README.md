@@ -9,6 +9,8 @@ This service's design borrows some from the OpenTimestamps project, but due to t
 
 
 ## System
+This system is a JSON-RPC 2.0 Server implemented in FastAPI, which keeps a persistent multi-log merkle tree in sync with periodic on-chain updates. The on-chain updates serve to anchor the merkle tree's state to blocknumbers of the Zilliqa blockchain and provide notorization of files as proof of existence, backed by the entire hashpower of the Zilliqa mainnet. 
+Docker-Swarm and ZODB are relied on heavily to manage the system and provide persistence. The implementation is intended to be cloud-portable in Docker containers, but only AWS will be tested in production. 
 
 ### RPC Service
 
@@ -25,6 +27,7 @@ uint256 Merkle Root
 
 To learn the basics of our development approach, this [guide](https://testdriven.io/blog/fastapi-crud/) may be helpful.
 
-Once you Run ./build.sh,  go to 
+Once you Run `.src/build.sh`,  go to 
 [http://localhost:8002/docs](http://localhost:8002/docs) to easily interact with the system.
 
+run your pytests in the container with `./src/test.sh`
