@@ -9,9 +9,9 @@ This service's design borrows some from the OpenTimestamps project, but due to t
 
 
 ## System
-This system is a JSON-RPC 2.0 Server implemented in FastAPI, which keeps a persistent multi-log merkle tree in sync with periodic on-chain updates. The on-chain updates serve to anchor the merkle tree's state to blocknumbers of the Zilliqa blockchain and provide notorization of files as proof of existence, backed by the entire hashpower of the Zilliqa mainnet. 
+This system is a JSON-RPC 2.0 Server implemented in FastAPI, which keeps a persistent merkle tree in sync with a file-backed log and periodic on-chain updates. The on-chain updates serve to anchor the merkle tree's state to blocknumbers of the Zilliqa blockchain and provide notorization of files as proof of existence, backed by the entire hashpower of the Zilliqa mainnet. 
 Docker-Swarm and ZODB are relied on heavily to manage the system and provide persistence. The implementation is intended to be cloud-portable in Docker containers, but only AWS will be tested in production. 
-
+ 
 ### RPC Service
 
 ### Smart Contracts
