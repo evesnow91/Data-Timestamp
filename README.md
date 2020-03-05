@@ -13,11 +13,13 @@ This system is a JSON-RPC 2.0 Server implemented in FastAPI, which keeps a persi
 Docker-Swarm and ZODB are relied on heavily to manage the system and provide persistence. The implementation is intended to be cloud-portable in Docker containers, but only AWS will be tested in production. 
  
 ### RPC Service
+We use JSON-RPC 2.0 for several reasons. Mainly, because of the nature of merkle proofs we will always provide create-or-update functionality from the same endpoing, JSON-RPC defines itself around method calls to POST endpoint(s), so the remaining functionality of REST is not needed. Additionally, this is more typical for IoT and service meshes, since RPC is message-oriented knowing the system is sufficient. Finally, Zilliqa's interactions are all defined as a JSON-RPC 2.0 service so familiarity and compatibility will benefit any developers looking to fork the project as the basis for their own dapp. 
 
 ### Smart Contracts
 
 (* Mutable variable storing the latest merkle root *)
 uint256 Merkle Root
+
 
 ### Incomplete and Complete Proof Files
 

@@ -4,7 +4,7 @@ from pydantic import BaseModel, Json
 class StampRequestSchema(BaseModel):
     transaction: Json
 
-class TreeRequestSchema(BaseModel):
+class TreeProofSchema(BaseModel):
     proof: Json
     
 class ProofSchema(BaseModel):
