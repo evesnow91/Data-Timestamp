@@ -1,11 +1,9 @@
 from pydantic import BaseModel, Json
 
 
-class StampRequestSchema(BaseModel):
-    transaction: Json
+class StampProofSchema(BaseModel):
+    proof: Json
 
 class TreeProofSchema(BaseModel):
     proof: Json
     
-class ProofSchema(BaseModel):
-    proof: Json
