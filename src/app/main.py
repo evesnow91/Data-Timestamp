@@ -1,14 +1,12 @@
 import fastapi_jsonrpc as jsonrpc
 from fastapi import Depends
 
-from api.errors import *
-from api import models
-from core.cache import Cache
-from core.tree import Tree
-
+from core import *
+from errors import *
+import models
 # JSON-RPC entrypoint
 
-api_v1 = jsonrpc.Entrypoint('/api/v1/proofs')
+api_v1 = jsonrpc.Entrypoint('/api/v1/')
 
 merkle_tree = Tree();
 cache = Cache('./cache.json');
@@ -23,8 +21,11 @@ def stamp(digest:bytes) -> models.StampProofSchema:
     merkle_tree.add(digest)
 
 @api_v1.method()
-def tree() -> models.TreeProofSchema:
-    pass
+def tree(root:str=None) -> models.TreeProofSchema:
+    """This method calls the merkle tree's consistency proof - demonstrating a given merkle root is an ancestor of the present one. If nothing is passed as parameter, the present merkle root is returned."""
+    if(root is None):
+        return merkle_tree.current_root()
+
 
 
 # entrypoint: ./proof methods=stamp, tree

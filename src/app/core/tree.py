@@ -17,6 +17,7 @@ class Tree:
 
 
     def export(self, file):
+        """export the tree as json to the given file"""
         self.merkle.export(file)
 
     def add(self, digest):
@@ -33,4 +34,10 @@ class Tree:
         self.merkle.encryptRecord(self, digest)
 
         # note this function assumes hexadecimal.
-        return self.merkle.merkleProof()
+        return self.merkle.merkleProof({'checksum': digest})
+    
+    def current_root(self):
+        return self.merkle.get_commitment()
+
+    def consistency_proof(self, subhash):
+        return self.merkle.merkleProof({'subhash': subhash})
