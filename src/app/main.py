@@ -20,7 +20,7 @@ cache = Cache('./cache.json');
 @api_v1.method(errors=[DigestFormatError])
 def stamp(digest:bytes) -> models.StampProofSchema:
     """Due to the nature of Merkle proofs, only one method for interacting with digests is necessary - if a client wishes to submit a new digest, they only need to call this method with a novel digest. The response will either be a new proof, or an existing proof upgraded to its latest categorization.""" 
-    pass
+    merkle_tree.add(digest)
 
 @api_v1.method()
 def tree() -> models.TreeProofSchema:

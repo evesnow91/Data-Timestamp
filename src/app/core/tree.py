@@ -18,3 +18,19 @@ class Tree:
 
     def export(self, file):
         self.merkle.export(file)
+
+    def add(self, digest):
+        """adds the given digest to the merkle tree"""
+        self.merkle.encryptRecord(digest)
+
+    def proof_from(self, digest):
+        """This function gets the proof of existance from the tree for this given digest. If it is a novel digest, the timestamp proof is newly minted. Otherwise a valid upgrade proof is given for that digest.
+
+        Assumes that the digest is hexadecimal.
+                
+        Returns:
+        the challenge needed to fetch a full proof from the merkle tree"""
+        self.merkle.encryptRecord(self, digest)
+
+        # note this function assumes hexadecimal.
+        return self.merkle.merkleProof()
