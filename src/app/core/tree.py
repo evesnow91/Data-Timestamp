@@ -1,7 +1,7 @@
 """This singleton class handles merkle tree interactions, maintains a single digest store and handles outputting proofs in the respective format. It may form the basis for a Zilliqa implementation of the [SideTree](https://github.com/decentralized-identity/sidetree/blob/master/docs/protocol.md) protocol as it is upgraded in the future."""
 
 from pymerkle import *
-
+from fastapi.encoders import jsonable_encoder
 class Tree:
     """Tree class wraps and uses the defaults for pymerkle. It accepts SHA-256 hashes, and UTF-8 encoding. For testing you might benefit from turning off preimage protection"""
     def __init__(self, file=None):
@@ -20,9 +20,7 @@ class Tree:
         """export the tree as json to the given file"""
         self.merkle.export(file)
 
-    def add(self, digest):
-        """adds the given digest to the merkle tree"""
-        self.merkle.encryptRecord(digest)
+
 
     def proof_from(self, digest):
         """This function gets the proof of existance from the tree for this given digest. If it is a novel digest, the timestamp proof is newly minted. Otherwise a valid upgrade proof is given for that digest.
@@ -31,13 +29,19 @@ class Tree:
                 
         Returns:
         the challenge needed to fetch a full proof from the merkle tree"""
-        self.merkle.encryptRecord(self, digest)
+        self.merkle.encryptRecord(digest)
 
         # note this function assumes hexadecimal.
-        return self.merkle.merkleProof({'checksum': digest})
-    
+        proof = self.merkle.merkleProof({'checksum': digest}).toJSONString()
+        print(proof)
+        return proof
+
     def current_root(self):
         return self.merkle.get_commitment()
 
     def consistency_proof(self, subhash):
-        return self.merkle.merkleProof({'subhash': subhash})
+        """Returns a consistency proof that the subhash is a valid ancestor root of the current one
+        Returns:
+        A pymerkle.Proof object serialized to JSON
+        """
+        return self.merkle.merkleProof({'subhash': subhash}).toJSONString()
