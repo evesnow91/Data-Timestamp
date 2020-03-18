@@ -1,5 +1,7 @@
 """This singleton class handles merkle tree interactions, maintains a single digest store and handles outputting proofs in the respective format. It may form the basis for a Zilliqa implementation of the [SideTree](https://github.com/decentralized-identity/sidetree/blob/master/docs/protocol.md) protocol as it is upgraded in the future."""
 
+import calendar
+import time
 from pymerkle import *
 from fastapi.encoders import jsonable_encoder
 from .errors import *
@@ -17,9 +19,12 @@ class Tree:
             self.merkle = MerkleTree.loadFromFile(file)
 
 
-    def export(self, file):
-        """export the tree as json to the given file"""
-        self.merkle.export(file)
+    def export(self):
+        """export the tree as json to a file called tree_<calendar>.json"""
+        filestring = "tree_" + str(calendar.timegm(time.gmtime())) + ".json"
+        print("exporting tree to "+filestring)
+        self.merkle.export(filestring)
+        print("printed tree to json")
 
     def stamp(self, digest):
         """this method will add the digest to the merkle tree and return the full proof serialized.

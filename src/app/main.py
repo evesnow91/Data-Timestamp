@@ -54,7 +54,7 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     # ideally you'd put this backup in a docker volume, S3 or Grafana-compatible store.
-    merkle_tree.export('tree.json')
+    merkle_tree.export()
 
 if __name__ == '__main__':
     import uvicorn
