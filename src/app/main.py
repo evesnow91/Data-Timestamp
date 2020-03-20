@@ -1,3 +1,4 @@
+
 import fastapi_jsonrpc as jsonrpc
 from fastapi import Depends
 from loguru import logger
@@ -5,15 +6,12 @@ from loguru import logger
 from core.tree import *
 from core.errors import *
 
-
-# import models
 # JSON-RPC entrypoint
-
 api_v1 = jsonrpc.Entrypoint('/api/v1/')
 
-merkle_tree = Tree();
-# logger = log();
- 
+# Server singletons
+merkle_tree = Tree()
+
 
 # RPC Methods
 
@@ -22,21 +20,26 @@ merkle_tree = Tree();
 # def root():
 #     return merkle_tree.current_root()
 
-@api_v1.method(errors=[DigestFormatError])
-def stamp(digest:bytes) -> str:
-    """The response will be a new proof, or an existing proof upgraded to its latest commitment.""" 
-    return merkle_tree.stamp(digest)
+@api_v1.method(errors=[ChecksumFormatError])
+def submit(checksum:str) -> bool:
+    """The response will be a new proof, or an existing proof upgraded to its latest commitment. Expects that the checksum be UTF-8 encoded""" 
+    merkle_tree.stamp(checksum)
 
+
+@api_v1.method(errors=[ChecksumFormatError, ChecksumNotFoundError])
+def proof(checksum:str) -> dict:
+    """The response will be an existing proof upgraded to its latest commitment.Or an error indicating the checksum must be submitted first""" 
+    return merkle_tree.proofFor(checksum)
 
 @api_v1.method()
-def consistency(past_root:str) -> str:
+def consistency(past_root:str) -> dict:
     """This method calls the merkle tree's consistency proof - demonstrating a given merkle root is an ancestor of the present one. If nothing is passed as parameter, the present merkle root is returned."""
     return merkle_tree.consistency_proof(past_root)
 
 
 @api_v1.method()
-def validate(proof:str) -> str:
-    """This method validates the serialized proof against its local merkle tree. It does not indicate that the proof is anchored, only that its digest exists and the proof is well-formed."""
+def validate(proof:str) -> dict:
+    """This method validates the serialized proof against its local merkle tree. It does not indicate that the proof is anchored, only that its checksum exists and the proof is well-formed."""
     return merkle_tree.validate(proof)
 
 
@@ -48,13 +51,15 @@ app.bind_entrypoint(api_v1)
 # configure logger session
 @app.on_event("startup")
 async def startup():
-    pass
+    logger.add("file_{time}.log")
+    logger.debug("Service is Spinning Up")
 
 # Dump the logs if a shutdown is occuring.
 @app.on_event("shutdown")
 async def shutdown():
     # ideally you'd put this backup in a docker volume, S3 or Grafana-compatible store.
     merkle_tree.export()
+    logger.debug("Service is Shutting Down")
 
 if __name__ == '__main__':
     import uvicorn
