@@ -1,16 +1,22 @@
 # errors
 import fastapi_jsonrpc as jsonrpc
 
-class DigestFormatError(jsonrpc.BaseError):
+
+class ChecksumFormatError(jsonrpc.BaseError):
     CODE = 6000
-    MESSAGE = 'Digest improperly formed error'
+    MESSAGE = "Checksum improperly formed error"
+
 
 class ValidationError(jsonrpc.BaseError):
     CODE = 6001
-    MESSAGE = 'The proof could not be validated'
+    MESSAGE = "The proof could not be validated"
 
 
-class DigestNotFoundError(jsonrpc.BaseError):
+class ChecksumNotFoundError(jsonrpc.BaseError):
     CODE = 6002
-    MESSAGE = 'Digest is not in the merkle tree'
+    MESSAGE = "Checksum is not in the merkle tree"
 
+
+class ChecksumExistsError(jsonrpc.BaseError):
+    CODE = 6003
+    MESSAGE = "Checksum is already in the merkle tree"
