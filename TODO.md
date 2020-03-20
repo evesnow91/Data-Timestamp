@@ -1,9 +1,6 @@
 # List
 [X] routes on main.py
-[ ] tests for two major RPC functions
-[ ] FDD
-[ ] Hypothesis schema testing harness
-[ ] Minio logging container
+[ ] tests for three major RPC functions
 [ ] Scilla Contract - merkle store
 [ ] Scilla Contract - UpdateProof
 [ ] Smart Contract Unit tests
@@ -12,9 +9,9 @@
 
 # Milestones
 ## Implementation of calendar services (1/3)
-[ ] Creation of RPC server codebase
-[ ] Creation of endpoints for query
-[ ] Documentation for RPC APIs
+[X] Creation of RPC server codebase
+[X] Creation of endpoints for query
+[X] Documentation for RPC APIs
 
 ## Implementation of calendar services (2/3)
 [ ] Stability testing
@@ -36,3 +33,10 @@
 [ ] Hooking up with calendar service RPC endpoints
 
 
+
+
+## Cleanup
+
+[ ] Unit tests
+[ ] Wiki
+[ ] Readme
