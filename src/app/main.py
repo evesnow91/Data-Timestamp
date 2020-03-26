@@ -17,7 +17,7 @@ merkle_tree = Tree()
 
 @api_v1.method(errors=[ChecksumFormatError])
 def submit(checksum:bytes) -> bool:
-    """Expect a bytestring in hexadecimal - representing the hash digest of the file you want to timestamp. The response will be a boolean indicating if the submission succeeded. Note if you a re-submitting a digest that is the same, the proof method will still return the oldest checksum's proof."""
+    """Expect a bytestring in hexadecimal representing the hash digest of the file you want to timestamp. The response will be a boolean indicating if the submission succeeded. Note if you a re-submitting a digest that is the same, the proof method will still return the oldest checksum's proof."""
     return merkle_tree.stamp(checksum)
 
 
@@ -37,7 +37,7 @@ def consistency(past_root:str) -> dict:
 
 @api_v1.method()
 def validate(proof:dict) -> dict:
-    """This method validates the serialized proof against its local merkle tree. It does not indicate that the proof is anchored, only that its checksum exists and the proof is well-formed."""
+    """This method validates the serialized proof against its local merkle tree. It does not indicate that the proof is anchored, only that its checksum exists and the proof is well-formed. It is not recommended over the client validate, as the client can check the mainchain for valid anchoring"""
     return merkle_tree.validate(proof)
 
 

@@ -20,17 +20,18 @@ class Tree:
         file (str): Optional recovery of tree state dumped by export().
         """
         if file is None:
-            self.merkle = MerkleTree(b"hello world",
-                                     b"Hello world", 
-                                     b"hello World",
-                                     b"Hello World",
-                                     b"hello world!",
-                                     b"Hello World!", #include  enough hello worlds to construct a path
-                                     raw_bytes=False) 
-                                     
+            self.merkle = MerkleTree(
+                b"hello world",
+                b"Hello world",
+                b"hello World",
+                b"Hello World",
+                b"hello world!",
+                b"Hello World!",  # include  enough hello worlds to construct a path
+                raw_bytes=False,
+            )
+
         else:
             self.merkle = MerkleTree.loadFromFile(file)
-
 
     def export(self):
         """export the tree as json to a file called tree_<calendar>.json"""
@@ -60,7 +61,6 @@ class Tree:
         Errors: 
         ChecksumFormatError, ChecksumNotFoundError"""
 
-
         return self.merkle.merkleProof({"checksum": checksum}).serialize()
 
     def validate(self, proof):
@@ -74,7 +74,7 @@ class Tree:
 
         try:
             tmp = Proof.deserialize(proof)
-            logger.info("The proof to validate: {}",tmp)
+            logger.info("The proof to validate: {}", tmp)
             return self.merkle.validateProof(tmp, get_receipt=True).serialize()
         except:
             raise ValidationError
