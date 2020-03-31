@@ -5,6 +5,33 @@ import pytest
 from app.api import crud
 
 
+
+def test_create_stamp(test_app):
+    response = test_app.get("/ping")
+    assert response.status_code == 200
+    assert response.json() == {"ping": "pong!"}
+
+def test_reject_bad_hash(test_app):
+    pass
+
+def test_valid_proof(test_app):
+    pass
+
+def test_proof_upgrade(test_app):
+    pass
+
+
+def test_responds(test_app):
+    response = test_app.get("/ping")
+    assert response.status_code == 200
+    assert response.json() == {"ping": "pong!"}
+
+def test_consistency(test_app):
+    """demonstrate that the service can prove a new merkle root has a specific anscestor"""
+    response = test_app.get("/ping")
+
+
+///////////////////////////////////////////////
 def test_create_note(test_app, monkeypatch):
     test_request_payload = {"title": "something", "description": "something else"}
     test_response_payload = {"id": 1, "title": "something", "description": "something else"}

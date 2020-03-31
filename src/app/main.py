@@ -1,4 +1,4 @@
-
+import asyncio
 import fastapi_jsonrpc as jsonrpc
 from fastapi import Depends
 from loguru import logger
@@ -12,18 +12,23 @@ api_v1 = jsonrpc.Entrypoint('/api/v1/')
 # Server singletons
 merkle_tree = Tree()
 
+#Cache for pending timestamps
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(cache.set('key', 'value'))
 
 # RPC Methods
 
 @api_v1.method(errors=[ChecksumFormatError])
 def submit(checksum:bytes) -> bool:
-    """Expect a bytestring in hexadecimal representing the hash digest of the file you want to timestamp. The response will be a boolean indicating if the submission succeeded. Note if you a re-submitting a digest that is the same, the proof method will still return the oldest checksum's proof."""
+    """Expect a bytestring in hexadecimal representing the hash digest of the file you want to timestamp. The response will be a boolean indicating if the submission was accepted by the calendar (but the proof of existence is assumed incomplete). Digests submitted this block are idempotent - meaning that you can only timestamp a file once per block."""
+    logger.info("Checksum {} submitted for inclusion", checksum)
     return merkle_tree.stamp(checksum)
 
 
 @api_v1.method(errors=[ChecksumFormatError, ChecksumNotFoundError])
 def proof(checksum:bytes) -> dict:
-    """Expects a bytestring already submitted. The response will be an existing proof upgraded to its latest commitment.Or an error indicating the checksum must be submitted first""" 
+    """Expects a bytestring already submitted. The response will be an existing proof upgraded to its latest commitment.Or an error indicating the checksum must be submitted first. This endpoint should be polled by submitters of incomplete timestamps for proofs that include the complete anchor.""" 
+    logger.info("Checksum {} submitted for inclusion", checksum)
     return merkle_tree.proofFor(checksum)
 
 @api_v1.method()
