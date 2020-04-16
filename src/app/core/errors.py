@@ -20,3 +20,7 @@ class ChecksumNotFoundError(jsonrpc.BaseError):
 class ChecksumExistsError(jsonrpc.BaseError):
     CODE = 6003
     MESSAGE = "Checksum is already in the merkle tree"
+
+class ExistsInCacheError(jsonrpc.BaseError):
+    CODE = 6004
+    MESSAGE = "Checksum is already in the stamp cache"

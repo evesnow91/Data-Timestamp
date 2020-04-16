@@ -1,7 +1,9 @@
 import asyncio
+
 import fastapi_jsonrpc as jsonrpc
 from fastapi import Depends
 from loguru import logger
+from aiocache import Cache
 
 from core.tree import *
 from core.errors import *
@@ -13,8 +15,11 @@ api_v1 = jsonrpc.Entrypoint('/api/v1/')
 merkle_tree = Tree()
 
 #Cache for pending timestamps
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(cache.set('key', 'value'))
+mempool = Cache(Cache.MEMORY)
+
+# Server variables
+SUBBLOCK_NUMBER = 0
+
 
 # RPC Methods
 

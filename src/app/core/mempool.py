@@ -1,11 +1,54 @@
-from tinydb import TinyDB, Query
+"""This singleton class handles the cache, maintains a single checksum store and handles outputting receipts in the expected format. It is designed so that no matter how many instances you have, you end up with the same cache instance (singleton)."""
+
+import asyncio
+import uuid
+import json
+
+from aiocache import caches, Cache
+from loguru import logger
+
+
+from .errors import *
+
+caches.set_config({
+    'default': {
+        'cache': "aiocache.SimpleMemoryCache"
+        }
+    }
+})
+
 
 
 class Mempool:
-    """This class caches digests until the service signals they've been added to the merkle tree. The cache is dumped every time the merkle root is added to the mainchain by convention. You might wish to validate your tree against the cache in testing."""
+    """wraps aiocache with serialization and threading abstracted from main server invocation file."""
+    CHECKBACK=30    #set the time for clients to re-check timestamps (in seconds)
+    def __init__(self, sub_block=0):
+        self.cache = caches.get('default')   # This always returns the same instance
+        self.block=sub_block
 
-    def __init__(self, db_path):
-        self.store = TinyDB(db_path)
+    async def add_with_reciept(self, bytestr):
+        """adds the digest to the cache and gives a reciept. 
+        
+        Note: must be awaited
 
-    def add(self, UUID, digest: bytes):
-        self.store.insert({"UUID": UUID, "digest": digest})
+        Param: the digest to add to the cache, in bytes.
+
+        Raises: ExistsInCacheError
+        """
+        req_id=uuid.uuid1()
+        try:
+            await self.cache.add(bytestr, req_id)
+            logger.info("Checksum {} added to cache by request {}", bytestr, req_id)
+            return json.dumps(
+                            {"request": req_id,
+                             "digest": bytestr,
+                             "status": "ACCEPTED",
+                             "checkback": Mempool.CHECKBACK 
+                            })
+
+        except ValueError:
+            logger.info("Checksum {} exists in cache", bytestr)
+            return ExistsInCacheError
+        
+    def exists(self, bytestr):
+        return self.cache.exists(bystr)
