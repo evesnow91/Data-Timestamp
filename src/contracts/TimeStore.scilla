@@ -17,6 +17,21 @@ let one_msg =
   let nil_msg = Nil {Message} in
   Cons {Message} msg nil_msg
 
+(* Error events *)
+type Error =
+  | CodeNotKairos
+  | CodeNotChronos
+
+let make_error =
+  fun (result : Error) =>
+    let result_code = 
+      match result with
+      | CodeNotKairos  => Int32 -1
+      | CodeNotChronos => Int32 -2
+      end
+    in
+    { _exception : "Error"; code : result_code }
+
 (* error codes library *)
 let code_success = Uint32 0
 let code_not_authorized = Uint32 2
@@ -26,9 +41,10 @@ let code_invalid_params = Uint32 3
 (*             The contract definition             *)
 (***************************************************)
 contract TimeStore
-(owner: ByStr20,
-chronos: ByStr20,
-kairos: ByStr20)
+(
+  chronos: ByStr20,
+  kairos: ByStr20
+)
 
 (*Store of Data Timestamp's merkle root*)
 field latestMerkleRoot: String = ""
@@ -36,6 +52,10 @@ field latestMerkleRoot: String = ""
 (*Store of NIST's latest randomness*)
 field latestNISTRandom: String = ""
 
+procedure ThrowError(err : Error)
+  e = make_error err;
+  throw e
+end
 
 (* @notice: Allows a `_sender` to update the merkle root from a remote Calendar server *)
 (* @dev   : Access controls are simply if _sender is the set server key *)
@@ -48,22 +68,13 @@ transition updateRoot(new_root: String)
     match permitted with
     | False =>
         (* the attempt to update root was rejected *)
-        msg = {_tag: ""; 
-                _recipient: _sender; 
-                _amount: Uint128 0; 
-                code: code_not_authorized};
-        msgs = one_msg msg;
-        send msgs
+        err = CodeNotKairos;
+        ThrowError err
     | True =>
         (* An updated merkle root can be used to upgrade a proof transparently - there is no need to log past roots *)
         latestMerkleRoot := new_root;
-
-        msg = {_tag: ""; 
-                _recipient: _sender; 
-                _amount: Uint128 0; 
-                code: code_success};
-        msgs = one_msg msg;
-        send msgs
+        e = {_eventname: "RootUpdated"; new_root: new_root};
+        event e
     end
 
 
@@ -82,26 +93,15 @@ transition updateRandom(new_random: String)
     match permitted with
     | False =>
         (* the attempt to update the random beacon was rejected *)
-        msg = {_tag: ""; 
-                _recipient: _sender; 
-                _amount: Uint128 0; 
-                code: code_not_authorized};
-        msgs = one_msg msg;
-        send msgs
+        err = CodeNotChronos;
+        ThrowError err
     | True =>
         (* Update the randomness beacon *)
         (* FUTURE: Require proof from calendar service for trustable oracle *)
         latestNISTRandom := new_random;
-
-        msg = {_tag: ""; 
-                _recipient: _sender; 
-                _amount: Uint128 0; 
-                code: code_success};
-        msgs = one_msg msg;
-        send msgs
+        e = {_eventname: "RandomUpdated"; new_random: new_random};
+        event e
     end
 
 
 end
-
-
